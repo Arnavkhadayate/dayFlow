@@ -1,0 +1,5 @@
+import { NextResponse } from "next/server";
+import { completeTask, deleteTask, updateTask } from "@/lib/tasks";
+import { getDemoUserId } from "@/lib/current-user";
+export async function PATCH(request: Request, { params }: { params: Promise<{ taskId: string }> }) { try { const { taskId } = await params; const body = await request.json(); const userId = await getDemoUserId(); const task = body.complete ? await completeTask(userId, taskId, body.actualMinutes) : await updateTask(userId, taskId, body); return NextResponse.json(task); } catch (error) { console.error("Task update failed", error); return NextResponse.json({ error: "Task could not be updated. Please retry." }, { status: 500 }); } }
+export async function DELETE(_request: Request, { params }: { params: Promise<{ taskId: string }> }) { try { const { taskId } = await params; await deleteTask(await getDemoUserId(), taskId); return new NextResponse(null, { status: 204 }); } catch (error) { console.error("Task deletion failed", error); return NextResponse.json({ error: "Task could not be deleted. Please retry." }, { status: 500 }); } }
